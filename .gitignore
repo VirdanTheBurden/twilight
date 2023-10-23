@@ -1,0 +1,10 @@
+
+# vscode nonsense
+.vscode
+
+# object files
+*.o
+
+# miscellaneous
+languagespec.txt
+notes.txt

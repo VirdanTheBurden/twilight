@@ -1,0 +1,46 @@
+use stdlib::io;
+use stdlib::http;
+use stdlib::http::{HTTPResponse};
+
+/*
+enumerations go up by 1, starting from 0 by default.
+you can assign a value directly to override this.
+
+for example, RequestType now starts from 1, and increments by 1.
+
+enum RequestType {
+    GET = 1,
+    POST,
+    DELETE,
+    PUT,
+    PATCH
+}
+*/
+
+
+function main(integer argc, string[] argv) : integer {
+    string s = "This is\n\"some quoted\"\n text.";
+
+    integer *aPtr;
+    
+    integer  hex = 0x05;
+    integer  match_code = hex::to_base(10); // 5
+    integer *aPtr = @a;
+    
+    HTTPResponse resp = http::request("https://api.somewhere.com", http::RequestType::GET);
+    
+    string resp_code = match (resp::response_code) {
+        200 ? "OK",
+        404 ? "NOT FOUND",
+        418 ? { return "I'M" + " A " + "TEAPOT" },
+        _   ? none
+    }
+    
+    if (resp_code == "OK" && resp::response_code == 200) {
+        io::display("Here's your response, chief: {}"::format(resp::data));
+        dim[:] response_dictionary<string, any> = resp::json();
+    }
+    
+    return 1; // something went wrong!
+    
+}
