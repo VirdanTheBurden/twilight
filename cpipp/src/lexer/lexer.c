@@ -20,7 +20,7 @@ void lexFile(const char *source) {
         
         printf("%2d '%.*s'\n", token.tokenType, token.length, token.start);
         
-        if (token.tokenType == TOKEN_EOF || token.tokenType == TOKEN_ERROR) break;
+        if (token.tokenType == TOKEN_EOF) break;
     }
     
 }

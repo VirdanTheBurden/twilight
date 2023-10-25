@@ -2,12 +2,13 @@
 #include "lexer/lexer.h"
 #include "common.h"
 
+extern argument_flag_t flags;
 
 static char *readFile(const char *path) {
     FILE *f = fopen(path, "r");
 
     if (!f) {
-        fprintf(stderr, "Error: file \"%s\" could not be found.", path);
+        fprintf(stderr, "Error: file \"%s\" could not be found.\n", path);
         exit(74);
     }
 
@@ -19,7 +20,7 @@ static char *readFile(const char *path) {
 
     if (!buffer) {
         fclose(f);
-        fprintf(stderr, "Error: buffer could not be allocated for file \"%s\".", path);
+        fprintf(stderr, "Error: buffer could not be allocated for file \"%s\".\n", path);
         exit(74);
     }
 
@@ -30,9 +31,10 @@ static char *readFile(const char *path) {
 }
 
 
-void beginCompilation(const char *path) {
+void compile(const char *path) {
     // get source code
     char *source = readFile(path);
+    
 
     // produce token stream
     lexFile(source);
