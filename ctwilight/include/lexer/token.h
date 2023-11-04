@@ -1,17 +1,21 @@
 #ifndef CPIPP_TOKEN_H
 #define CPIPP_TOKEN_H
 
-typedef enum token_type_t {
+typedef enum {
 
     // Single-character tokens
     TOKEN_LEFT_PAREN = 1, TOKEN_RIGHT_PAREN,
     TOKEN_LEFT_BRACE, TOKEN_RIGHT_BRACE,
     TOKEN_LEFT_CURLY_BRACE, TOKEN_RIGHT_CURLY_BRACE,
-    TOKEN_COMMA, TOKEN_DOT, TOKEN_MINUS, TOKEN_PLUS,
-    TOKEN_SEMICOLON, TOKEN_STAR, TOKEN_AT, TOKEN_SLASH,
-    TOKEN_CARAT, TOKEN_TILDE, TOKEN_QUESTION,
+    TOKEN_COMMA, TOKEN_DOT, TOKEN_SEMICOLON, 
+    TOKEN_AT, TOKEN_CARAT, TOKEN_TILDE, 
+    TOKEN_QUESTION,
 
     // One or two character tokens
+    TOKEN_MINUS, TOKEN_MINUS_EQUAL,
+    TOKEN_PLUS, TOKEN_PLUS_EQUAL,
+    TOKEN_STAR, TOKEN_STAR_EQUAL,
+    TOKEN_SLASH, TOKEN_SLASH_EQUAL,
     TOKEN_BANG, TOKEN_BANG_EQUAL,
     TOKEN_EQUAL, TOKEN_EQUAL_EQUAL,
     TOKEN_GREATER, TOKEN_GREATER_EQUAL,
@@ -36,7 +40,7 @@ typedef enum token_type_t {
 
 } TokenType;
 
-typedef struct token_t {
+typedef struct {
     TokenType tokenType;
     const char *start;
     int length;

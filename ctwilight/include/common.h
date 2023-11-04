@@ -7,7 +7,7 @@
 #include <string.h>
 #include <stdio.h>
 
-typedef enum ArgumentFlags {
+typedef enum {
     ARGUMENT_INVALID = 1,
     ARGUMENT_PRINT_VERSION_INFO = 2,
     ARGUMENT_PRINT_HELP = 4,

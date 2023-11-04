@@ -3,8 +3,8 @@
 #include "lexer/token.h"
 #define __CPIPP_VERSION__ "0.1.0"
 
-const char *help = "Usage: cpipp [OPTIONS]... [FILES]...\n"
-                   "A compiler for Pipp, written in C.\n\n"
+const char *help = "Usage: ctwi [OPTIONS]... [FILES]...\n"
+                   "A compiler for Twilight, written in C.\n\n"
                    "  --debug                    Combines --print-lexer and --print-parser.\n"
                    "  -h, --help                 Display this information.\n"
                    "  --print-lexer              Prints a .pipp file's token stream.\n"
@@ -16,8 +16,6 @@ argument_flag_t argumentFlags = 0;
 
 
 argument_flag_t checkArgumentType(const char *argument) {
-
-    printf("argument: %s\n", argument);
 
     if (strncmp(argument, "-h", 2) == 0 || strncmp(argument, "--help", 6) == 0) {
         return ARGUMENT_PRINT_HELP;
@@ -36,7 +34,7 @@ argument_flag_t checkArgumentType(const char *argument) {
     }
 
     else if (strncmp(argument, "--print-ast", 11) == 0) {
-        return ARGUMENT_PRINT_LEXER;
+        return ARGUMENT_PRINT_AST;
     }
 
     else if (strncmp((char *)(argument + strlen(argument) - 4), "pipp", 4) == 0) {
@@ -50,7 +48,7 @@ argument_flag_t checkArgumentType(const char *argument) {
 int main(int argc, const char *argv[]) {
 
     if (argc == 1) {
-        fprintf(stderr, "cpipp: no input files provided.\n");
+        fprintf(stderr, "ctwi: no input files provided.\n");
         exit(64);
     }
   
@@ -64,7 +62,7 @@ int main(int argc, const char *argv[]) {
         }
 
         else if (flag & ARGUMENT_PRINT_VERSION_INFO) {
-            printf("cpipp version %s\n", __CPIPP_VERSION__);
+            printf("ctwi version %s\n", __CPIPP_VERSION__);
             exit(0);
         }
 
@@ -79,7 +77,7 @@ int main(int argc, const char *argv[]) {
 
     else {
 
-        // last argument is a file path
+        // last argument is a assumed to be a file path, so we can stop iterating early
         for (int i = 1; i < argc - 1; i++) {
             argument_flag_t flag = checkArgumentType(argv[i]);
 
@@ -95,12 +93,10 @@ int main(int argc, const char *argv[]) {
 
             else {
                 argumentFlags |= flag;
-            }
-
-            
+            }    
         }
 
-        fprintf(stderr, "value of bit flag: %d\n", argumentFlags);
-        exit(64);
+        compile(argv[argc - 1]);
+        exit(0);
     }
 }

@@ -1,11 +1,11 @@
 CC=gcc
-CLFAGS=-c -I include/ -Wall -Wextra 
+CLFAGS=-c -I include/ -Wall -Wextra --std=c99
 targetFiles := $(wildcard src/*.c) $(wildcard src/*/*.c)
 objectFiles := $(wildcard *.o)
 
-all: cpipp
+all: compile cpipp clean
 
-cpipp: compile
+cpipp: 
 	$(CC) $(objectFiles) -o cpipp
 
 compile: $(targetFiles)

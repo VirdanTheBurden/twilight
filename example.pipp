@@ -17,20 +17,19 @@ enum RequestType {
 }
 */
 
+const integer match_code = (0xC8)::to_base(10); // 200
 
-function main(integer argc, string[] argv) : integer {
+
+function main(string[] argv) : integer {
     string s = "This is\n\"some quoted\"\n text.";
-
-    integer *aPtr;
     
     integer  hex = 0x05;
-    integer  match_code = hex::to_base(10); // 5
-    integer *aPtr = @a;
+    integer *aPtr = @hex;
     
     HTTPResponse resp = http::request("https://api.somewhere.com", http::RequestType::GET);
     
     string resp_code = match (resp::response_code) {
-        200 ? "OK",
+        match_code ? "OK", // constants can be used in matches, how neat is that?
         404 ? "NOT FOUND",
         418 ? { return "I'M" + " A " + "TEAPOT" },
         _   ? none
@@ -38,7 +37,7 @@ function main(integer argc, string[] argv) : integer {
     
     if (resp_code == "OK" && resp::response_code == 200) {
         io::display("Here's your response, chief: {}"::format(resp::data));
-        dim[:] response_dictionary<string, any> = resp::json();
+        dim[:1] response_dictionary<string, any> = resp::json();
     }
     
     return 1; // something went wrong!

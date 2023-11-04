@@ -35,7 +35,6 @@ void compile(const char *path) {
     // get source code
     char *source = readFile(path);
     
-
     // produce token stream
     lexFile(source);
 

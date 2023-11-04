@@ -2,15 +2,6 @@
 #include "lexer/token.h"
 #include "common.h"
 
-int total_keyword_search_time = 0;
-
-typedef struct scanner_t {
-    const char *start;
-    const char *current;
-    int line;
-} Scanner;
-
-
 Scanner scanner;
 
 void initScanner(const char *source) {
@@ -29,9 +20,20 @@ static bool isAtEnd() {
     return *scanner.current == '\0';
 }
 
+static bool isBinaryDigit(char c) {
+    return '0' == c || c == '1';
+}
 
-static bool isDigit(char c) {
+static bool isDecimalDigit(char c) {
     return '0' <= c && c <= '9'; 
+}
+
+static bool isHexDigit(char c) {
+    return isDecimalDigit(c) || ('A' <= c && c <= 'F') || ('a' <= c && c <= 'f');
+}
+
+static bool isOctalDigit(char c) {
+    return isDecimalDigit(c) && c != '9' && c != '8';
 }
 
 
@@ -105,14 +107,31 @@ static Token string() {
 
 
 static Token number() {
-    while (isDigit(peep())) advance();
 
-    // we support base 2, 8, 10, and 16 in literals
-    if ((peep() == '.' || peep() == 'x' || peep() == 'o' || peep() == 'b') 
-        && isDigit(peepNext())) {
+    // check for non base-10 numbers
+    if (match('x')) {
+        while(isHexDigit(peep())) advance();
+        return emitToken(TOKEN_NUMBER);
+    }
+
+    else if (match('o')) {
+        while (isOctalDigit(peep())) advance();
+        return emitToken(TOKEN_NUMBER);
+    }
+
+    else if (match('b')) {
+        while (isBinaryDigit(peep())) advance();
+        return emitToken(TOKEN_NUMBER);
+    }
+
+    // assume base-10
+    while (isDecimalDigit(peep())) advance();
+
+    
+    if ((peep() == '.') && isDecimalDigit(peepNext())) {
         advance(); // nom nom the dot
         
-        while(isDigit(peep())) advance();
+        while(isDecimalDigit(peep())) advance();
 
         return emitToken(TOKEN_FLOAT);
     }
@@ -246,7 +265,7 @@ static TokenType identifierType() {
 
 
 static Token identifier() {
-    while (isAlpha(peep()) || isDigit(peep())) advance();
+    while (isAlpha(peep()) || isDecimalDigit(peep())) advance();
     return emitToken(identifierType());
 }
 
@@ -279,6 +298,7 @@ static void skipWhitespace() {
                         advance();
                     }
 
+                    // move past */
                     advance();
                     advance();
                 }
@@ -300,7 +320,7 @@ Token scanToken() {
     
     char c = advance();
     if (isAlpha(c)) return identifier();
-    if (isDigit(c)) return number();
+    if (isDecimalDigit(c)) return number();
 
     switch (c) {
         case '(': return emitToken(TOKEN_LEFT_PAREN);
@@ -311,17 +331,29 @@ Token scanToken() {
         case '}': return emitToken(TOKEN_RIGHT_CURLY_BRACE);
         case ',': return emitToken(TOKEN_COMMA);
         case '.': return emitToken(TOKEN_DOT);
-        case '-': return emitToken(TOKEN_MINUS);
-        case '+': return emitToken(TOKEN_PLUS);
         case ';': return emitToken(TOKEN_SEMICOLON);
-        case '*': return emitToken(TOKEN_STAR);
         case '@': return emitToken(TOKEN_AT);
-        case '/': return emitToken(TOKEN_SLASH);
         case '^': return emitToken(TOKEN_CARAT);
         case '~': return emitToken(TOKEN_TILDE);
         case '?': return emitToken(TOKEN_QUESTION);
         case '"': return string();
 
+        case '-':
+            return emitToken(
+                match('=') ? TOKEN_MINUS_EQUAL : TOKEN_MINUS
+            );
+        case '+':
+            return emitToken(
+                match('=') ? TOKEN_PLUS_EQUAL : TOKEN_PLUS
+            );
+        case '*':
+            return emitToken(
+                match('=') ? TOKEN_STAR_EQUAL : TOKEN_STAR
+            );
+        case '/':
+            return emitToken(
+                match('=') ? TOKEN_SLASH_EQUAL : TOKEN_SLASH
+            );
         case '!':
             return emitToken(
                 match('=') ? TOKEN_BANG_EQUAL : TOKEN_BANG
